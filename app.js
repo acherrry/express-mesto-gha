@@ -1,13 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const userRouter = require('./routes/users');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: false,
-});
+app.use(userRouter);
 
-app.listen(PORT);
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/mestodb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: false,
+  });
+
+  await app.listen(PORT);
+}
+
+main();
