@@ -64,7 +64,7 @@ const editAvatar = async (req, res) => {
     const userId = req.user._id;
     const { avatar } = req.body;
     const user = await User
-      .findByIdAndUpdate(userId, { avatar }, { new: true });
+      .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true });
     if (!user) {
       return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
     }
