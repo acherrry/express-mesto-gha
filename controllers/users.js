@@ -1,15 +1,15 @@
 const User = require('../models/user');
 
-const ERROR_DATA_CODE = 400;
-const NOT_FOUND_CODE = 404;
-const ERROR_CODE = 500;
+const {
+  ERROR_DATA_CODE, NOT_FOUND_CODE, SERVER_ERROR_CODE, REQUEST_OK, CREATED_RESOURCE,
+} = require('../utils/constants');
 
 const getUser = async (req, res) => {
   try {
     const users = await User.find({});
-    return res.send(users);
+    return res.status(REQUEST_OK).send(users);
   } catch (err) {
-    return res.status(ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
 };
 
@@ -20,24 +20,24 @@ const getUserById = async (req, res) => {
     if (!user) {
       return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному ID не найден' });
     }
-    return res.send(user);
+    return res.status(REQUEST_OK).send(user);
   } catch (err) {
     if (err.name === 'CastError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Невалидные переданные данные' });
     }
-    return res.status(ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
 };
 
 const createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
-    return res.send(user);
+    return res.status(CREATED_RESOURCE).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Переданы некорректные данные при создании пользователя' });
     }
-    return res.status(ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
 };
 
@@ -47,15 +47,15 @@ const editProfile = async (req, res) => {
     const { name, about } = req.body;
     const user = await User
       .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true });
-    if (!user) {
-      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
-    }
-    return res.send(user);
+    return res.status(REQUEST_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
     }
-    return res.status(ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
+    if (err.name === 'CastError') {
+      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+    }
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
 };
 
@@ -65,15 +65,15 @@ const editAvatar = async (req, res) => {
     const { avatar } = req.body;
     const user = await User
       .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true });
-    if (!user) {
-      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
-    }
-    return res.send(user);
+    return res.status(REQUEST_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Переданы некорректные данные при обновлении аватара' });
     }
-    return res.status(ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
+    if (err.name === 'CastError') {
+      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+    }
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
 };
 

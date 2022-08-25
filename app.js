@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const NOT_FOUND_CODE = 404;
+const { NOT_FOUND_CODE } = require('./utils/constants');
 
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
