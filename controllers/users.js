@@ -47,13 +47,16 @@ const editProfile = async (req, res) => {
     const { name, about } = req.body;
     const user = await User
       .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true });
+    if (!user) {
+      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+    }
     return res.status(REQUEST_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
     }
     if (err.name === 'CastError') {
-      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+      return res.status(ERROR_DATA_CODE).send({ message: 'Передан некорректный ID' });
     }
     return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
@@ -65,13 +68,16 @@ const editAvatar = async (req, res) => {
     const { avatar } = req.body;
     const user = await User
       .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true });
+    if (!user) {
+      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+    }
     return res.status(REQUEST_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(ERROR_DATA_CODE).send({ message: 'Переданы некорректные данные при обновлении аватара' });
     }
     if (err.name === 'CastError') {
-      return res.status(NOT_FOUND_CODE).send({ message: 'Пользователь с указанным ID не найден' });
+      return res.status(ERROR_DATA_CODE).send({ message: 'Передан некорректный ID' });
     }
     return res.status(SERVER_ERROR_CODE).send({ message: 'Произошла ошибка на сервере' });
   }
