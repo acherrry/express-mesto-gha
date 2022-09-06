@@ -19,6 +19,8 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use(cookieParser());
+
 app.post('/signup', express.json(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -28,8 +30,6 @@ app.post('/signup', express.json(), celebrate({
     password: Joi.string().required(),
   }),
 }), createUser);
-
-app.use(cookieParser());
 
 app.post('/signin', express.json(), celebrate({
   body: Joi.object().keys({
