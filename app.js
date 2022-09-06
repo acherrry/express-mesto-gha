@@ -8,18 +8,16 @@ const regExpUrl = require('./utils/validation');
 const {
   createUser, login,
 } = require('./controllers/users');
+
 const auth = require('./middlewares/auth');
 
 const NotFoundError = require('./errors/not-found-err');
-
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
-
-app.use(cookieParser());
 
 app.post('/signup', express.json(), celebrate({
   body: Joi.object().keys({
@@ -30,6 +28,8 @@ app.post('/signup', express.json(), celebrate({
     password: Joi.string().required(),
   }),
 }), createUser);
+
+app.use(cookieParser());
 
 app.post('/signin', express.json(), celebrate({
   body: Joi.object().keys({
