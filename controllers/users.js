@@ -44,18 +44,24 @@ const createUser = async (req, res, next) => {
   } = req.body;
 
   try {
+    const user = await User.findOne({ email });
+    if (user) {
+      throw new ConflictError('При регистрации указан email, который занял другой пользователь');
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    const createdUser = await User.create({
       name, about, avatar, email, password: hashedPassword,
     });
     return res.status(CREATED).send({
-      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
+      _id: createdUser._id,
+      name: createdUser.name,
+      about: createdUser.about,
+      avatar: createdUser.avatar,
+      email: createdUser.email,
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
       return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-    } if (err.code === 11000) {
-      return next(new ConflictError('При регистрации указан email, который занял другой пользователь'));
     }
     return next(err);
   }
