@@ -1,6 +1,8 @@
 const express = require('express');
 const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
+const regExpUrl = require('../utils/validation');
+
 const {
   createCard, getCards, deleteCardById, likeCard, dislikeCard,
 } = require('../controllers/cards');
@@ -8,7 +10,7 @@ const {
 router.post('/cards', express.json(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().pattern(regExpUrl),
   }),
 }), createCard);
 
