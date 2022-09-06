@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const regExpUrl = require('./utils/validation');
 
 const {
   createUser, login,
@@ -19,7 +21,16 @@ const app = express();
 
 app.use(cookieParser());
 
-app.post('/signup', express.json(), createUser);
+app.post('/signup', express.json(), celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(regExpUrl),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
+
 app.post('/signin', express.json(), login);
 app.use(auth);
 app.use(userRouter);
