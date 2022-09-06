@@ -48,7 +48,8 @@ const createUser = async (req, res, next) => {
     const user = await User.create({
       name, about, avatar, email, password: hashedPassword,
     });
-    return res.status(CREATED).send(user);
+    return res.status(CREATED).send({
+      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email });
   } catch (err) {
     if (err.name === 'ValidationError') {
       return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
@@ -76,9 +77,7 @@ const login = async (req, res, next) => {
       expiresIn: 604800,
       httpOnly: true,
     });
-    return res.status(OK).send({
-      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
-    });
+    return res.status(OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return next(new BadRequestError('Переданы некорректные данные для авторизации'));
